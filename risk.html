@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FloodSafe — Risk Prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>FloodSafe</h1>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="weather.html">Current Weather</a>
+      <a href="flood.html">Flood Alert</a>
+      <a href="emergency.html">Emergency</a>
+      <a href="risk.html" class="active">Predict Risk</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Flood Risk Assessment</h2>
+
+    <section class="risk-calculator card">
+      <h3>Calculate Your Risk Level</h3>
+      <form id="riskForm" class="risk-form">
+        <div class="location-input">
+          <h3>Your Location</h3>
+          <div class="location-methods">
+            <div class="method-card active" id="manualInput">
+              <h4>Enter Manually</h4>
+              <div class="form-group">
+                <label>
+                  Street Address
+                  <input type="text" id="street" placeholder="Enter street address" required>
+                </label>
+                <label>
+                  City
+                  <input type="text" id="city" placeholder="Enter city" required>
+                </label>
+                <label>
+                  State/Province
+                  <input type="text" id="state" placeholder="Enter state/province" required>
+                </label>
+                <label>
+                  Country
+                  <input type="text" id="country" placeholder="Enter country" required>
+                </label>
+              </div>
+            </div>
+
+            <div class="method-divider">OR</div>
+
+            <div class="method-card" id="mapInput">
+              <h4>Interactive Map Selection</h4>
+              <div class="map-search">
+                <input type="text" id="locationSearch" placeholder="Search for a location..." />
+                <button type="button" id="searchLocation" class="btn">🔍 Search</button>
+              </div>
+              <div id="map" class="map-container"></div>
+              <div class="map-controls">
+                <button type="button" id="getCurrentLocation" class="btn">
+                  📍 Use My Location
+                </button>
+                <button type="button" id="zoomIn" class="btn">➕ Zoom In</button>
+                <button type="button" id="zoomOut" class="btn">➖ Zoom Out</button>
+              </div>
+              <p class="map-instruction">Click on the map to set your location or use the search above</p>
+            </div>
+          </div>
+
+          <div id="selectedLocation" class="selected-location" style="display: none;">
+            <h4>Selected Location</h4>
+            <p id="locationDisplay">No location selected yet</p>
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn primary">Save Location</button>
+            <button type="reset" class="btn">Clear</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="riskResult" class="risk-result" style="display: none;">
+        <!-- Risk assessment result appears here -->
+      </div>
+    </section>
+
+    <section class="risk-tips card">
+      <h3>Understanding Risk Factors</h3>
+      <div class="risk-grid">
+        <div class="risk-item">
+          <h4>Elevation Impact</h4>
+          <p>Low-lying areas are more susceptible to flooding. Higher ground generally provides better safety during flood events.</p>
+        </div>
+        <div class="risk-item">
+          <h4>Water Proximity</h4>
+          <p>Areas closer to rivers, lakes, or coastal regions face higher flood risks, especially during heavy rainfall or storm surges.</p>
+        </div>
+        <div class="risk-item">
+          <h4>Drainage Importance</h4>
+          <p>Good drainage systems can significantly reduce flood risk by efficiently channeling water away from your area.</p>
+        </div>
+        <div class="risk-item">
+          <h4>Historical Patterns</h4>
+          <p>Past flooding events are strong indicators of future flood risk. Areas with frequent flooding need extra preparedness.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="index.html">← Back to Dashboard</a>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    let map, marker;
+    
+    // Initialize map when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize map
+      map = L.map('map', {
+        center: [20, 0],
+        zoom: 2,
+        zoomControl: false // We'll add custom zoom controls
+      });
+
+      // Add default OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      // Add click handler
+      map.on('click', function(e) {
+        setLocation(e.latlng);
+      });
+
+      // Handle location search
+      const searchBtn = document.getElementById('searchLocation');
+      const searchInput = document.getElementById('locationSearch');
+      
+      searchBtn.addEventListener('click', function() {
+        const query = searchInput.value.trim();
+        if (query) {
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.length > 0) {
+                const location = data[0];
+                const latlng = L.latLng(location.lat, location.lon);
+                map.setView(latlng, 13);
+                setLocation(latlng);
+              } else {
+                alert('Location not found');
+              }
+            })
+            .catch(() => alert('Error searching for location'));
+        }
+      });
+
+      // Handle custom zoom controls
+      document.getElementById('zoomIn').addEventListener('click', () => map.zoomIn());
+      document.getElementById('zoomOut').addEventListener('click', () => map.zoomOut());
+
+      // Handle geolocation with high accuracy
+      document.getElementById('getCurrentLocation').addEventListener('click', function() {
+        const button = this;
+        button.textContent = 'Getting location...';
+        button.disabled = true;
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            // Success callback
+            function(position) {
+              const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
+              map.setView(latlng, 16);
+              setLocation(latlng);
+              button.textContent = '📍 Use My Location';
+              button.disabled = false;
+            },
+            // Error callback
+            function(error) {
+              let errorMessage = 'Location error: ';
+              switch(error.code) {
+                case error.PERMISSION_DENIED:
+                  errorMessage += 'Please allow location access in your browser settings.';
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  errorMessage += 'Location information unavailable.';
+                  break;
+                case error.TIMEOUT:
+                  errorMessage += 'Request timed out.';
+                  break;
+                default:
+                  errorMessage += error.message;
+              }
+              alert(errorMessage);
+              button.textContent = '📍 Use My Location';
+              button.disabled = false;
+            },
+            // Options for high accuracy
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+        } else {
+          alert('Geolocation is not supported by your browser');
+          button.textContent = '📍 Use My Location';
+          button.disabled = false;
+        }
+      });
+    });
+
+    function setLocation(latlng) {
+      // Remove existing marker
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      // Create custom marker
+      marker = L.marker(latlng, {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          iconSize: [16, 16]
+        })
+      }).addTo(map);
+
+      // Update form values
+      document.getElementById('latitude').value = latlng.lat;
+      document.getElementById('longitude').value = latlng.lng;
+
+      // Update location display
+      const locationDisplay = document.getElementById('locationDisplay');
+      const selectedLocation = document.getElementById('selectedLocation');
+      selectedLocation.style.display = 'block';
+
+      // Function to calculate flood risk
+      function calculateFloodRisk(surfaceType, rainfall, elevation) {
+        // Base risk score starts at 0
+        let riskScore = 0;
+        
+        // Surface type risk factors
+        const surfaceRiskFactors = {
+          'Coast': 4,    // Highest base risk due to storm surges and low elevation
+          'Plain': 3,    // High risk due to poor drainage and low elevation
+          'Hill': 2,     // Moderate risk, some runoff protection
+          'Foothill': 2, // Moderate risk, good drainage but potential runoff
+          'Mountain': 1, // Lower risk due to elevation, but risk from rapid runoff
+          'Alpine': 1,   // Low risk due to high elevation
+          'Peak': 0      // Lowest risk due to highest elevation
+        };
+        
+        // Add surface type risk
+        riskScore += surfaceRiskFactors[surfaceType];
+        
+        // Rainfall risk factors
+        if (rainfall >= 50) riskScore += 4;        // Extreme rainfall
+        else if (rainfall >= 30) riskScore += 3;   // Heavy rainfall
+        else if (rainfall >= 15) riskScore += 2;   // Moderate rainfall
+        else if (rainfall >= 5) riskScore += 1;    // Light rainfall
+        
+        // Elevation adjustments for special cases
+        if (elevation <= 10 && rainfall >= 15) {   // Very low areas with significant rain
+          riskScore += 2;
+        }
+        
+        // Determine risk category
+        if (riskScore >= 7) return ['High', 'red'];
+        if (riskScore >= 5) return ['Moderate', 'orange'];
+        if (riskScore >= 3) return ['Low', 'yellow'];
+        return ['No', 'green'];
+      }
+
+      // Fetch both elevation and weather data
+      Promise.all([
+        // Fetch elevation data
+        fetch(`https://api.open-meteo.com/v1/elevation?latitude=${latlng.lat}&longitude=${latlng.lng}`),
+        // Fetch weather data with more precipitation parameters
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latlng.lat}&longitude=${latlng.lng}&daily=precipitation_sum,rain_sum&timezone=auto&forecast_days=1`)
+      ])
+        .then(responses => Promise.all(responses.map(response => response.json())))
+        .then(([elevationData, weatherData]) => {
+          const elevation = elevationData.elevation[0];
+          // Get total precipitation (includes both rain and snow)
+          const rainfall = weatherData.daily.precipitation_sum[0] || 0; // Today's precipitation
+          
+          // Determine surface type based on elevation
+          let surfaceType;
+          if (elevation <= 50) surfaceType = 'Coast';
+          else if (elevation <= 200) surfaceType = 'Plain';
+          else if (elevation <= 500) surfaceType = 'Hill';
+          else if (elevation <= 1000) surfaceType = 'Foothill';
+          else if (elevation <= 3000) surfaceType = 'Mountain';
+          else if (elevation <= 5000) surfaceType = 'Alpine';
+          else surfaceType = 'Peak';
+          
+          // Calculate flood risk
+          const [riskLevel, riskColor] = calculateFloodRisk(surfaceType, rainfall, elevation);
+          
+          // Reverse geocode using OpenStreetMap Nominatim
+          return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`)
+            .then(response => response.json())
+            .then(locationData => {
+              locationDisplay.textContent = `${locationData.display_name}
+Terrain Type: ${surfaceType} (${elevation}m)
+Rainfall today: ${rainfall}mm
+Flood Risk: ${riskLevel}`;
+              
+              // Add popup with all information
+              marker.bindPopup(`
+                <strong>Selected Location</strong><br>
+                Latitude: ${latlng.lat.toFixed(6)}<br>
+                Longitude: ${latlng.lng.toFixed(6)}<br>
+                Terrain: ${surfaceType} (${elevation}m)<br>
+                Rainfall: ${rainfall}mm today<br>
+                <span style="color: ${riskColor}; font-weight: bold;">
+                  Flood Risk Level: ${riskLevel}
+                </span>
+              `).openPopup();
+            });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          locationDisplay.textContent = `Lat: ${latlng.lat.toFixed(6)}, Lng: ${latlng.lng.toFixed(6)}`;
+          
+          // Add popup with coordinates only if elevation fetch fails
+          marker.bindPopup(`
+            <strong>Selected Location</strong><br>
+            Latitude: ${latlng.lat.toFixed(6)}<br>
+            Longitude: ${latlng.lng.toFixed(6)}
+          `).openPopup();
+        });
+    }
+  </script>
+</body>
+</html>

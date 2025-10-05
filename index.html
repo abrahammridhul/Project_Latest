@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FloodSafe — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>FloodSafe</h1>
+    <nav>
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="weather.html">Current Weather</a>
+      <a href="flood.html">Flood Alert</a>
+      <a href="emergency.html">Emergency</a>
+      <a href="risk.html">Predict Risk</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="dashboard-grid">
+      <article class="card risk-card">
+        <h2>Predict Risk</h2>
+        <p>Calculate your area's flood risk level based on key factors.</p>
+        <a class="btn warning-btn" href="risk.html">Check Your Risk</a>
+      </article>
+
+      <article class="card">
+        <h2>Emergency</h2>
+        <p>Quick access to emergency resources and helplines.</p>
+        <a class="btn" href="emergency.html">Open Emergency</a>
+      </article>
+
+      <article class="card">
+        <h2>Current Weather</h2>
+        <p>Check current weather conditions to assess flood risk.</p>
+        <a class="btn" href="weather.html">Open Weather</a>
+      </article>
+
+      <article class="card">
+        <h2>Flood Alert</h2>
+        <p>Report or view active flood incidents and alerts.</p>
+        <a class="btn" href="flood.html">Open Flood Alerts</a>
+      </article>
+    </section>
+
+    <section class="alerts">
+      <h2>Alert / Report an Incident</h2>
+      <form id="alertForm" class="alert-form">
+        <label>Title<input id="alertTitle" required placeholder="Short title" /></label>
+        <label>Description<textarea id="alertDesc" rows="3" placeholder="Describe the incident" required></textarea></label>
+        <label>Location<input id="alertLocation" placeholder="City or coordinates" /></label>
+        <label>Severity
+          <select id="alertSeverity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Submit Alert</button>
+          <button type="button" id="clearAlerts" class="btn">Clear All</button>
+        </div>
+      </form>
+
+      <div id="alertsList" class="alerts-list" aria-live="polite">
+        <!-- alerts injected here -->
+      </div>
+    </section>
+
+    <section class="about">
+      <h2>About FloodSafe</h2>
+      <p>FloodSafe is a lightweight client-side flood warning dashboard intended for quick reporting, basic weather checks and emergency contact access. It stores alerts locally (in your browser). For live weather data you can add an OpenWeatherMap API key on the Weather page.</p>
+    </section>
+
+    <section class="contact">
+      <h2>Contact / Helplines</h2>
+      <ul>
+        <li>National Emergency: <a href="tel:112">112</a></li>
+        <li>Fire & Rescue: <a href="tel:101">101</a></li>
+        <li>Police: <a href="tel:100">100</a></li>
+        <li>Flood Hotline (sample): <a href="tel:+1800123456">+1 800 123 456</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>FloodSafe — client-side demo • No backend • Alerts stored locally</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

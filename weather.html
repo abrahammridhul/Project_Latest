@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FloodSafe — Current Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>FloodSafe</h1>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="weather.html" class="active">Current Weather</a>
+      <a href="flood.html">Flood Alert</a>
+      <a href="emergency.html">Emergency</a>
+      <a href="risk.html">Predict Risk</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Current Weather</h2>
+
+    <section class="weather-card">
+      <p>Enter a city name below to check current weather conditions.</p>
+      <input type="hidden" id="owmKey" value="234b3c976d662cfb07fbd0a2a910d2f0" />
+      <label>City<input id="cityInput" placeholder="Enter city name (e.g. London)" autofocus /></label>
+      <div class="form-actions">
+        <button id="getWeather" class="btn primary">Get Weather</button>
+      </div>
+
+      <div id="weatherResult" class="weather-result">
+        <!-- weather appears here -->
+      </div>
+    </section>
+
+    <section class="weather-info">
+      <div class="weather-details" style="display: none;">
+        <h3>Detailed Information</h3>
+        <div id="weatherDetails">
+          <!-- detailed weather info appears here -->
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Quick Tips</h3>
+      <ul>
+        <li>If heavy rain is forecast, stay informed and prepare emergency kits.</li>
+        <li>Sign up for local alerts from authorities for real-time warnings.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="index.html">← Back to Dashboard</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
