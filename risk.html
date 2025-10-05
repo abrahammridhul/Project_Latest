@@ -98,6 +98,134 @@
       opacity:0;
       transition:opacity 0.3s;
     }
+    
+    /* Simulator Styles */
+    .simulator-container {
+      display: grid;
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .scenario-builder {
+      background: rgba(1,30,41,0.5);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,180,216,0.2);
+    }
+
+    .scenario-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .form-group input[type="text"],
+    .form-group select {
+      padding: 8px 12px;
+      border: 1px solid rgba(0,180,216,0.2);
+      background: rgba(1,30,41,0.8);
+      color: var(--text);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* Dropdown styling */
+    .form-group select option {
+      background-color: var(--card);
+      color: var(--text);
+      padding: 12px;
+    }
+
+    .form-group select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Custom dropdown appearance */
+    .form-group select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+                        linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+      background-position: calc(100% - 20px) calc(1em + 2px),
+                         calc(100% - 15px) calc(1em + 2px);
+      background-size: 5px 5px,
+                      5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .form-group select:hover {
+      border-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Improve dropdown options contrast */
+    .form-group select option:hover,
+    .form-group select option:focus,
+    .form-group select option:active,
+    .form-group select option:checked {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .form-group input[type="range"] {
+      width: 100%;
+    }
+
+    #rainfallValue {
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .scenarios-comparison {
+      overflow-x: auto;
+    }
+
+    .scenarios-comparison table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .scenarios-comparison th,
+    .scenarios-comparison td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(0,180,216,0.2);
+    }
+
+    .scenarios-comparison th {
+      background: rgba(1,30,41,0.8);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .risk-level {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .risk-level.high { background: rgba(230,57,70,0.2); color: #e63946; }
+    .risk-level.moderate { background: rgba(255,214,10,0.2); color: #ffd60a; }
+    .risk-level.low { background: rgba(46,196,182,0.2); color: #2ec4b6; }
+    .risk-level.no { background: rgba(144,164,174,0.2); color: #90a4ae; }
+
+    .risk-visualization {
+      background: rgba(1,30,41,0.5);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,180,216,0.2);
+      height: 300px;
+    }
     .card:hover{
       transform:translateY(-5px);
       box-shadow:0 8px 30px rgba(0,0,0,0.3);
@@ -677,6 +805,64 @@
       </div>
     </section>
 
+    <section class="risk-simulator card">
+      <h3>Flood Risk Simulator</h3>
+      <div class="simulator-container">
+        <div class="scenario-builder">
+          <h4>Create Scenarios</h4>
+          <div class="scenario-form">
+            <div class="form-group">
+              <label for="scenarioName">Scenario Name</label>
+              <input type="text" id="scenarioName" placeholder="e.g., Heavy Rain Scenario">
+            </div>
+            <div class="form-group">
+              <label for="rainfallAmount">Rainfall Amount (mm)</label>
+              <input type="range" id="rainfallAmount" min="0" max="100" step="5" value="20">
+              <span id="rainfallValue">20 mm</span>
+            </div>
+            <div class="form-group">
+              <label for="terrainType">Terrain Type</label>
+              <select id="terrainType">
+                <option value="Coast">Coast (0-50m)</option>
+                <option value="Plain">Plain (50-200m)</option>
+                <option value="Hill">Hill (200-500m)</option>
+                <option value="Foothill">Foothill (500-1000m)</option>
+                <option value="Mountain">Mountain (1000-3000m)</option>
+                <option value="Alpine">Alpine (3000-5000m)</option>
+                <option value="Peak">Peak (5000m+)</option>
+              </select>
+            </div>
+            <button id="addScenario" class="btn primary">Add Scenario</button>
+          </div>
+        </div>
+        
+        <div class="scenarios-comparison">
+          <h4>Compare Scenarios</h4>
+          <div id="scenariosTable">
+            <table>
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>Terrain</th>
+                  <th>Rainfall</th>
+                  <th>Risk Level</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="scenariosBody">
+                <!-- Scenarios will be added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="risk-visualization">
+          <h4>Risk Visualization</h4>
+          <canvas id="riskChart"></canvas>
+        </div>
+      </div>
+    </section>
+
     <section class="risk-tips card">
       <h3>Understanding Risk Factors</h3>
       <div class="risk-grid">
@@ -705,6 +891,153 @@
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Store scenarios
+    let scenarios = [];
+    
+    // Initialize range input display
+    const rainfallInput = document.getElementById('rainfallAmount');
+    const rainfallDisplay = document.getElementById('rainfallValue');
+    rainfallInput.addEventListener('input', () => {
+      rainfallDisplay.textContent = `${rainfallInput.value} mm`;
+    });
+
+    // Initialize Chart
+    const ctx = document.getElementById('riskChart').getContext('2d');
+    let riskChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Risk Score',
+          data: [],
+          backgroundColor: [],
+          borderColor: [],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 10
+          }
+        }
+      }
+    });
+
+    // Function to determine risk level and color
+    function getRiskLevelAndColor(score) {
+      if (score >= 7) return ['High', '#e63946'];
+      if (score >= 5) return ['Moderate', '#ffd60a'];
+      if (score >= 3) return ['Low', '#2ec4b6'];
+      return ['No', '#90a4ae'];
+    }
+
+    // Add scenario button handler
+    document.getElementById('addScenario').addEventListener('click', () => {
+      const name = document.getElementById('scenarioName').value;
+      const rainfall = parseFloat(rainfallInput.value);
+      const terrain = document.getElementById('terrainType').value;
+      
+      if (!name) {
+        alert('Please enter a scenario name');
+        return;
+      }
+
+      // Get elevation for terrain type
+      const elevationMap = {
+        'Coast': 25,
+        'Plain': 125,
+        'Hill': 350,
+        'Foothill': 750,
+        'Mountain': 2000,
+        'Alpine': 4000,
+        'Peak': 5500
+      };
+
+      const elevation = elevationMap[terrain];
+      const riskScore = calculateRiskScore(terrain, rainfall, elevation);
+      const [riskLevel, riskColor] = getRiskLevelAndColor(riskScore);
+      
+      const scenario = {
+        name,
+        terrain,
+        rainfall,
+        riskLevel,
+        riskColor,
+        riskScore: riskScore
+      };
+
+      scenarios.push(scenario);
+      updateScenarioTable();
+      updateChart();
+    });
+
+    function calculateRiskScore(terrain, rainfall, elevation) {
+      // This should match the logic in your main risk calculation
+      let score = 0;
+      
+      const surfaceRiskFactors = {
+        'Coast': 4,
+        'Plain': 3,
+        'Hill': 2,
+        'Foothill': 2,
+        'Mountain': 1,
+        'Alpine': 1,
+        'Peak': 0
+      };
+      
+      score += surfaceRiskFactors[terrain];
+      
+      if (rainfall >= 50) score += 4;
+      else if (rainfall >= 30) score += 3;
+      else if (rainfall >= 15) score += 2;
+      else if (rainfall >= 5) score += 1;
+      
+      if (elevation <= 10 && rainfall >= 15) {
+        score += 2;
+      }
+      
+      return score;
+    }
+
+    function updateScenarioTable() {
+      const tbody = document.getElementById('scenariosBody');
+      tbody.innerHTML = '';
+      
+      scenarios.forEach((scenario, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${scenario.name}</td>
+          <td>${scenario.terrain}</td>
+          <td>${scenario.rainfall} mm</td>
+          <td><span class="risk-level ${scenario.riskLevel.toLowerCase()}">${scenario.riskLevel}</span></td>
+          <td>
+            <button onclick="deleteScenario(${index})" class="btn danger">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function updateChart() {
+      riskChart.data.labels = scenarios.map(s => s.name);
+      riskChart.data.datasets[0].data = scenarios.map(s => s.riskScore);
+      riskChart.data.datasets[0].backgroundColor = scenarios.map(s => s.riskColor + '40');
+      riskChart.data.datasets[0].borderColor = scenarios.map(s => s.riskColor);
+      riskChart.update();
+    }
+
+    function deleteScenario(index) {
+      scenarios.splice(index, 1);
+      updateScenarioTable();
+      updateChart();
+    }
+  </script>
   <script src="script.js"></script>
   <script>
     let map, marker;
