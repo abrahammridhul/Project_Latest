@@ -10,16 +10,31 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>FloodSafe</h1>
-    <nav>
-      <a href="index.html">Dashboard</a>
-      <a href="weather.html">Current Weather</a>
-      <a href="flood.html">Flood Alert</a>
-      <a href="emergency.html" class="active">Emergency</a>
-      <a href="risk.html">Predict Risk</a>
-    </nav>
-  </header>
+ <header class="site-header">
+  <h1>FloodSafe</h1>
+  
+  <!-- Desktop Navigation -->
+  <nav class="desktop-nav">
+    <a href="index.html">Dashboard</a>
+    <a href="weather.html">Current Weather</a>
+    <a href="flood.html">Flood Alert</a>
+    <a href="emergency.html" class="active">Emergency</a>
+    <a href="risk.html">Predict Risk</a>
+  </nav>
+  
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+  
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-close-btn" id="mobileCloseBtn">×</button>
+    <a href="index.html" >Dashboard</a>
+    <a href="weather.html">Current Weather</a>
+    <a href="flood.html">Flood Alert</a>
+    <a href="emergency.html" class="active">Emergency</a>
+    <a href="risk.html">Predict Risk</a>
+  </div>
+</header>
 
   <main class="container">
     <h2>Emergency Contacts & Resources</h2>
@@ -67,5 +82,6 @@
   <footer class="site-footer">
     <a href="index.html">← Back to Dashboard</a>
   </footer>
+  <script src="script.js"></script>
 </body>
 </html>

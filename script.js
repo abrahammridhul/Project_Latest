@@ -313,3 +313,60 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
 })
+
+
+// Mobile Navigation Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  const mobileNavLinks = mobileNav.querySelectorAll('a');
+  
+  // Open mobile menu
+  mobileMenuBtn.addEventListener('click', function() {
+    mobileNav.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+  });
+  
+  // Close mobile menu
+  mobileCloseBtn.addEventListener('click', function() {
+    mobileNav.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+  });
+  
+  // Close mobile menu when clicking on links
+  mobileNavLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = ''; // Restore scrolling
+      
+      // Update active state
+      mobileNavLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Also update desktop nav active state
+      const desktopLinks = document.querySelectorAll('.desktop-nav a');
+      desktopLinks.forEach(l => l.classList.remove('active'));
+      const correspondingDesktopLink = document.querySelector(`.desktop-nav a[href="${this.getAttribute('href')}"]`);
+      if (correspondingDesktopLink) {
+        correspondingDesktopLink.classList.add('active');
+      }
+    });
+  });
+  
+  // Close mobile menu when pressing Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = ''; // Restore scrolling
+    }
+  });
+  
+  // Close mobile menu when clicking outside
+  mobileNav.addEventListener('click', function(e) {
+    if (e.target === mobileNav) {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = ''; // Restore scrolling
+    }
+  });
+});
