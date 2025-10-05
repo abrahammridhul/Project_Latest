@@ -355,6 +355,11 @@
       border: 1px solid var(--success);
     }
 
+    .risk-result.no-risk {
+      background: rgba(0, 180, 216, 0.1);
+      border: 1px solid var(--accent);
+    }
+
     .risk-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -416,6 +421,32 @@
     .method-card .btn.primary{
   margin-top: 1.5rem;
 }
+
+    /* Intervention suggestions styling */
+    .intervention-suggestions {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .intervention-suggestions h4 {
+      color: var(--accent);
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+
+    .intervention-suggestions ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .intervention-suggestions li {
+      margin-bottom: 8px;
+      color: var(--text);
+      line-height: 1.4;
+    }
 
     @keyframes glow {
       from { box-shadow: 0 0 5px var(--warning), 0 0 10px var(--warning); }
@@ -986,6 +1017,10 @@ Flood Risk: ${riskLevel}`;
                 <p style="font-size: 1.5rem; font-weight: bold; color: ${riskColor};">${riskLevel} Risk</p>
                 <p>Elevation: ${elevation}m | Terrain: ${surfaceType} | Rainfall: ${rainfall}mm</p>
                 <p>${getRiskRecommendation(riskLevel)}</p>
+                <div class="intervention-suggestions">
+                  <h4>Suggested Interventions</h4>
+                  ${getInterventionSuggestions(riskLevel)}
+                </div>
               `;
 
               marker.bindPopup(`
@@ -1016,6 +1051,52 @@ Flood Risk: ${riskLevel}`;
           return 'Minimal risk, but stay informed about weather conditions.';
         default:
           return 'No significant flood risk detected at this time.';
+      }
+    }
+
+    // Helper function to get intervention suggestions
+    function getInterventionSuggestions(riskLevel) {
+      switch(riskLevel) {
+        case 'High':
+          return `
+            <ul>
+              <li>Evacuate immediately if advised by authorities</li>
+              <li>Move to higher ground or upper floors</li>
+              <li>Turn off utilities at main switches</li>
+              <li>Prepare emergency supplies and important documents</li>
+              <li>Follow emergency alerts and instructions</li>
+            </ul>
+          `;
+        case 'Moderate':
+          return `
+            <ul>
+              <li>Monitor weather forecasts regularly</li>
+              <li>Prepare sandbags or flood barriers</li>
+              <li>Move valuables to higher locations</li>
+              <li>Check drainage systems and clear debris</li>
+              <li>Have an evacuation plan ready</li>
+            </ul>
+          `;
+        case 'Low':
+          return `
+            <ul>
+              <li>Maintain proper drainage around property</li>
+              <li>Install check valves in plumbing</li>
+              <li>Elevate electrical systems and appliances</li>
+              <li>Keep gutters and downspouts clear</li>
+              <li>Consider flood insurance for protection</li>
+            </ul>
+          `;
+        default:
+          return `
+            <ul>
+              <li>Regularly inspect and maintain drainage systems</li>
+              <li>Monitor local weather conditions</li>
+              <li>Keep emergency contact numbers accessible</li>
+              <li>Stay informed about community flood plans</li>
+              <li>Consider landscaping that promotes water absorption</li>
+            </ul>
+          `;
       }
     }
   </script>
