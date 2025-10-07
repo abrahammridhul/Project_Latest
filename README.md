@@ -10,16 +10,7 @@ Files:
 - `styles.css` — styles
 - `script.js` — client-side logic
 
-How to run:
-Open `index.html` in your browser. No build or server required. For best results, serve the folder with a static server (optional):
 
-Windows (PowerShell):
-```powershell
-# from the project directory
-python -m http.server 8000
-```
-
-Then open http://localhost:8000 in your browser.
 
 Notes:
 - Alerts are stored locally in the browser's localStorage. They are not sent to any server.
